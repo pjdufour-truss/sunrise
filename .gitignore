@@ -1,0 +1,5 @@
+.envrc.local
+mnt
+__pycache__
+Pipfile
+Pipfile.lock

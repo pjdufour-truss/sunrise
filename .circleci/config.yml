@@ -1,0 +1,78 @@
+version: "2.1"
+
+executors:
+  # `main` uses the `circleci/python:3.6.4` docker image with a checkout of the sunrise code
+  primary:
+    docker:
+      - image: circleci/python:3.6.4
+  primary_with_postgres:
+    docker:
+      - image: circleci/python:3.6.4
+        environment:
+          - DB_NAME: sunrise
+          - DB_USER: sunrise
+          - DB_PASSWORD: password
+      - image: postgres:10
+        environment:
+          - POSTGRES_DB: sunrise
+          - POSTGRES_USER: sunrise
+          - POSTGRES_PASSWORD: password
+
+jobs:
+
+  # `deps` is used for cache python dependencies.
+  deps:
+    executor: primary
+    steps:
+      - checkout
+      - run: sudo chown -R circleci:circleci /usr/local/bin
+      - run: sudo chown -R circleci:circleci /usr/local/lib/python3.6/site-packages
+      - restore_cache:
+          keys:
+            - deps-{{ .Branch }}-{{ .Commit }}
+      - run:
+          command: |
+            sudo pip install pipenv
+            pipenv install
+      - save_cache:
+          key: deps-{{ .Branch }}-{{ .Commit }}
+          paths:
+            - ".venv"
+            - "/usr/local/bin"
+            - "/usr/local/lib/python3.6/site-packages"
+
+  # `migrations` is used for testing migrations.
+  migrations:
+    executor: primary_with_postgres
+    steps:
+      - checkout
+      - run: sudo chown -R circleci:circleci /usr/local/bin
+      - run: sudo chown -R circleci:circleci /usr/local/lib/python3.6/site-packages
+      - restore_cache:
+          keys:
+            - deps-{{ .Branch }}-{{ .Commit }}
+      - run: pipenv run python migrate
+
+  # `unit_tests` is used for running unit tests.
+  unit_tests:
+    executor: primary
+    steps:
+      - checkout
+      - run: sudo chown -R circleci:circleci /usr/local/bin
+      - run: sudo chown -R circleci:circleci /usr/local/lib/python3.6/site-packages
+      - restore_cache:
+          keys:
+            - deps-{{ .Branch }}-{{ .Commit }}
+      - run: pipenv run python manage.py test
+
+workflows:
+  version: 2
+  main:
+    jobs:
+      - deps
+      - migrations:
+          requires:
+            - deps
+      - unit_tests:
+          requires:
+            - deps
