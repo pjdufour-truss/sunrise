@@ -4,7 +4,7 @@ bin:
 up:
 ifndef CIRCLECI
 	@echo "Stopping system postgresql"
-	brew services stop postgresql 2> /dev/null || true
+	which brew && brew services stop postgresql 2> /dev/null || true
 endif
 	mkdir -p ./mnt/postgresql
 	docker-compose up -d db
@@ -18,11 +18,28 @@ down:
 migrate:
 	docker-compose exec web python manage.py migrate
 
-superuser:
-	@echo "from django.contrib.auth import get_user_model; User = get_user_model(); User.objects.create_superuser('$$ADMIN_USER', '$$ADMIN_EMAIL', '$$ADMIN_PASSWORD')" | docker-compose exec -T web python manage.py shell
+test:
+	docker-compose exec web python manage.py test
+
+
+define SUPERUSER_BODY
+from django.contrib.auth import get_user_model
+User = get_user_model()
+try:
+  User.objects.get(username='$$ADMIN_USER')
+except User.DoesNotExist:
+  User.objects.create_superuser('$$ADMIN_USER', '$$ADMIN_EMAIL', '$$ADMIN_PASSWORD')
+endef
+
+export SUPERUSER_BODY
+superuser: migrate
+	@echo "$$SUPERUSER_BODY" | docker-compose exec -T web python manage.py shell
 
 secretkey:
 	openssl rand -hex 64
+
+init: superuser
+	@echo "Sunrise initialized"
 
 psql:
 	psql -d $$DB_NAME -U $$DB_USER -h localhost -p $$DB_PORT
