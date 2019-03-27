@@ -29,13 +29,13 @@ jobs:
       - run: sudo chown -R circleci:circleci /usr/local/lib/python3.6/site-packages
       - restore_cache:
           keys:
-            - deps-{{ .Branch }}-{{ .Commit }}
+            - deps-{{ .Branch }}-{{ .Revision }}
       - run:
           command: |
             sudo pip install pipenv
             pipenv install
       - save_cache:
-          key: deps-{{ .Branch }}-{{ .Commit }}
+          key: deps-{{ .Branch }}-{{ .Revision }}
           paths:
             - ".venv"
             - "/usr/local/bin"
@@ -50,7 +50,7 @@ jobs:
       - run: sudo chown -R circleci:circleci /usr/local/lib/python3.6/site-packages
       - restore_cache:
           keys:
-            - deps-{{ .Branch }}-{{ .Commit }}
+            - deps-{{ .Branch }}-{{ .Revision }}
       - run: pipenv run python manage.py migrate
 
   # `unit_tests` is used for running unit tests.
@@ -62,7 +62,7 @@ jobs:
       - run: sudo chown -R circleci:circleci /usr/local/lib/python3.6/site-packages
       - restore_cache:
           keys:
-            - deps-{{ .Branch }}-{{ .Commit }}
+            - deps-{{ .Branch }}-{{ .Revision }}
       - run: pipenv run python manage.py test
 
 workflows:
