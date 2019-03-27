@@ -37,7 +37,7 @@ jobs:
       - save_cache:
           key: deps-{{ .Branch }}-{{ .Revision }}
           paths:
-            - ".venv"
+            - "/home/circleci/.local/share/virtualenvs/"
             - "/usr/local/bin"
             - "/usr/local/lib/python3.6/site-packages"
 
