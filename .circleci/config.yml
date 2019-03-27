@@ -51,7 +51,7 @@ jobs:
       - restore_cache:
           keys:
             - deps-{{ .Branch }}-{{ .Commit }}
-      - run: pipenv run python migrate
+      - run: pipenv run python manage.py migrate
 
   # `unit_tests` is used for running unit tests.
   unit_tests:
