@@ -60,10 +60,10 @@ jobs:
       - run:
           name: Run pre-commit tests
           command: pre-commit run --all-files
-        - save_cache:
-            key: pre-commit-dot-cache-{{ checksum ".pre-commit-config.yaml" }}
-            paths:
-              - ~/.cache/pre-commit
+      - save_cache:
+          key: pre-commit-dot-cache-{{ checksum ".pre-commit-config.yaml" }}
+          paths:
+            - ~/.cache/pre-commit
 
   # `migrations` is used for testing migrations.
   migrations:
