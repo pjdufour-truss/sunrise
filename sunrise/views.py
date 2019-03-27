@@ -1,11 +1,15 @@
 from django.http import HttpResponse
 
+
 def home(request):
     html = """
         <!doctype html>
         <html lang="en">
             <head>
-                <link rel="stylesheet" href="https://cdn.rawgit.com/openlayers/openlayers.github.io/master/en/v5.3.0/css/ol.css" type="text/css">
+                <link
+                    rel="stylesheet"
+                    href="https://cdn.rawgit.com/openlayers/openlayers.github.io/master/en/v5.3.0/css/ol.css"
+                    type="text/css">
                 <style>
                     .map { height: 100%x; width: 100%; }
                     #info {
@@ -21,7 +25,9 @@ def home(request):
                         transition: opacity 100ms ease-in;
                     }
                 </style>
-                <script src="https://cdn.rawgit.com/openlayers/openlayers.github.io/master/en/v5.3.0/build/ol.js"></script>
+                <script
+                    src="https://cdn.rawgit.com/openlayers/openlayers.github.io/master/en/v5.3.0/build/ol.js">
+                </script>
                 <title>OpenLayers example</title>
 
                 <script>
@@ -55,14 +61,21 @@ def home(request):
                         }
 
                         var url = "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/2.5_month.geojson";
+                        var format = new ol.format.GeoJSON({
+                            featureProjection: view.getProjection(),
+                            dataProjection: "EPSG:4326"
+                        });
                         async function loadEarthquakes() {
                             let response = await fetch(url);
                             let data = await response.json();
                             let features = data.features
                                 .filter(({properties}) => {
-                                    return properties.place.includes("California") || properties.place.includes("Mexico");
+                                    return (
+                                        properties.place.includes("California") ||
+                                        properties.place.includes("Mexico")
+                                    );
                                 })
-                                .map((f) => (new ol.format.GeoJSON({featureProjection: "EPSG:3857", "dataProjection": "EPSG:4326"})).readFeature(f))
+                                .map((f) => { return format.readFeature(f) });
                             console.log("Features:", features);
                             let sum = features.reduce((acc, f) => {
                                 const e = f.getGeometry().getExtent();

@@ -44,6 +44,27 @@ jobs:
             - "/usr/local/bin"
             - "/usr/local/lib/python3.6/site-packages"
 
+  # `pre_commit` is used to run pre-commit.
+  pre_commit:
+    executor: primary
+    steps:
+      - checkout
+      - run: sudo chown -R circleci:circleci /usr/local/bin
+      - run: sudo chown -R circleci:circleci /usr/local/lib/python3.6/site-packages
+      - restore_cache:
+          keys:
+            - deps-{{ .Branch }}-{{ .Revision }}
+      - restore_cache:
+          keys:
+            - pre-commit-dot-cache-{{ checksum ".pre-commit-config.yaml" }}
+      - run:
+          name: Run pre-commit tests
+          command: pre-commit run --all-files
+        - save_cache:
+            key: pre-commit-dot-cache-{{ checksum ".pre-commit-config.yaml" }}
+            paths:
+              - ~/.cache/pre-commit
+
   # `migrations` is used for testing migrations.
   migrations:
     executor: primary_with_postgres
@@ -58,7 +79,7 @@ jobs:
 
   # `unit_tests` is used for running unit tests.
   unit_tests:
-    executor: primary
+    executor: primary_with_postgres
     steps:
       - checkout
       - run: sudo chown -R circleci:circleci /usr/local/bin
@@ -73,9 +94,12 @@ workflows:
   main:
     jobs:
       - deps
+      - pre_commit:
+          requires:
+            - deps
       - migrations:
           requires:
-            - deps
+            - pre_commit
       - unit_tests:
           requires:
-            - deps
+            - pre_commit
