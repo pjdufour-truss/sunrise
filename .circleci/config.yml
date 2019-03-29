@@ -20,6 +20,23 @@ executors:
           POSTGRES_DB: sunrise
           POSTGRES_USER: sunrise
           POSTGRES_PASSWORD: password
+  cypress_with_python_and_postgres:
+    docker:
+      - image: cypress/base:10
+        environment:
+          APP_PORT: 8000
+      - image: circleci/python:3.6.4
+        environment:
+          APP_PORT: 8000
+          APP_SECRET_KEY: "ba379e85c2426e6b0c0e3dc305e563bfec392af98898dae8256591f9d2751af7a6fc24c8b9dc540644e5d6fca9b5317dad3c9d035e3ff1ec1361223101ba4f48"
+          DB_NAME: sunrise
+          DB_USER: sunrise
+          DB_PASSWORD: password
+      - image: postgres:10
+        environment:
+          POSTGRES_DB: sunrise
+          POSTGRES_USER: sunrise
+          POSTGRES_PASSWORD: password
 
 jobs:
 
@@ -76,8 +93,8 @@ jobs:
             - deps-{{ .Branch }}-{{ .Revision }}
       - run: pipenv run python manage.py migrate
 
-  # `unit_tests` is used for running unit tests.
-  unit_tests:
+  # `server_tests` is used for running server unit tests.
+  server_tests:
     executor: primary_with_postgres
     steps:
       - checkout
@@ -87,6 +104,26 @@ jobs:
           keys:
             - deps-{{ .Branch }}-{{ .Revision }}
       - run: pipenv run python manage.py test
+
+  # `e2e_tests` runs end-to-end JavaScript tests using Cypress.  https://www.cypress.io/
+  e2e_tests:
+    executor: primary_with_postgres
+    steps:
+      - checkout
+      - run: sudo chown -R circleci:circleci /usr/local/bin
+      - run: sudo chown -R circleci:circleci /usr/local/lib/python3.6/site-packages
+      - restore_cache:
+          keys:
+            - deps-{{ .Branch }}-{{ .Revision }}
+      - run: CYPRESS_baseUrl=http://localhost:$APP_PORT /node_modules/.bin/cypress run
+      - store_artifacts:
+          path: cypress/videos
+          destination: videos
+      - store_artifacts:
+          path: cypress/screenshots
+          destination: screenshots
+      - store_test_results:
+          path: cypress/results
 
 workflows:
   version: 2
@@ -99,6 +136,9 @@ workflows:
       - migrations:
           requires:
             - pre_commit
-      - unit_tests:
+      - server_tests:
+          requires:
+            - pre_commit
+      - e2e_tests:
           requires:
             - pre_commit

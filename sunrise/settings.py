@@ -20,6 +20,8 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/2.1/howto/deployment/checklist/
 
+TITLE = os.getenv("APP_TITLE", "Sunrise")
+
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = os.getenv("APP_SECRET_KEY")
 
@@ -121,3 +123,10 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/2.1/howto/static-files/
 
 STATIC_URL = '/static/'
+
+# Map settings
+#
+
+# Default map center as LonLat
+MAP_CENTER = [float(str) for str in os.getenv("MAP_CENTER", "").split(",")] if len(os.getenv("MAP_CENTER", "")) > 0 else [0.0, 0.0]
+MAP_COLOR = os.getenv("MAP_COLOR", "rgba(0, 0, 255, 0.4)")

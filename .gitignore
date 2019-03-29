@@ -3,3 +3,8 @@ mnt
 __pycache__
 Pipfile
 Pipfile.lock
+cypress/plugins
+cypress/results/
+cypress/screenshots
+cypress/videos
+.DS_Store

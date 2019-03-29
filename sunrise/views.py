@@ -1,6 +1,8 @@
 from django.http import HttpResponse
 
 
+from sunrise import settings
+
 def home(request):
     html = """
         <!doctype html>
@@ -28,13 +30,14 @@ def home(request):
                 <script
                     src="https://cdn.rawgit.com/openlayers/openlayers.github.io/master/en/v5.3.0/build/ol.js">
                 </script>
-                <title>OpenLayers example</title>
+                <title>"""+settings.TITLE+"""</title>
 
                 <script>
                     window.addEventListener("load", (event) => {
                         var layers = [new ol.layer.Tile({source: new ol.source.OSM()})];
+                        var center = ["""+str(settings.MAP_CENTER[0])+","+str(settings.MAP_CENTER[1])+"""];
                         var view = new ol.View({
-                          center: ol.proj.fromLonLat([0, 0]),
+                          center: ol.proj.fromLonLat(center),
                           zoom: 3
                         });
                         var map = new ol.Map({target: 'map', layers: layers, view: view});
@@ -89,7 +92,7 @@ def home(request):
                                     image: new ol.style.Circle({
                                         radius: 10,
                                         fill: new ol.style.Fill({
-                                          color: 'rgba(0, 0, 255, 0.4)'
+                                          color: '"""+settings.MAP_COLOR+"""'
                                         }),
                                         stroke: new ol.style.Stroke({
                                           color: '#000000',

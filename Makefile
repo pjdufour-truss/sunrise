@@ -1,3 +1,5 @@
+GIT_COMMIT=$(shell git rev-list -1 HEAD)
+
 bin:
 	@mkdir -p bin
 
@@ -18,9 +20,14 @@ down:
 migrate:
 	docker-compose exec web python manage.py migrate
 
-test:
+server_tests:
 	docker-compose exec web python manage.py test
 
+build_cypress:
+	docker build -t sunrise/cypress:$(GIT_COMMIT) -f Dockerfile.cypress .
+
+e2e_tests: build_cypress
+	docker run --rm -it -e "CYPRESS_baseUrl=http://localhost:$$APP_PORT" --net=host -v $(PWD)/cypress:/cypress sunrise/cypress
 
 define SUPERUSER_BODY
 from django.contrib.auth import get_user_model
@@ -50,4 +57,4 @@ clean:
 	rm -f Pipfile
 	rm -f Pipfile.lock
 
-.PHONY: clean up down migrate psql superuser secretkey
+.PHONY: clean up down migrate psql superuser secretkey build_cypress e2e_tests

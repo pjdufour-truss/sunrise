@@ -13,7 +13,7 @@ services:
       - "5432:5432"
   web:
     build: .
-    command: python manage.py runserver 0.0.0.0:8000
+    command: python manage.py runserver 0.0.0.0:$$APP_PORT
     environment:
       - "ALLOWED_HOSTS=*"
       - "DB_HOST"
@@ -22,6 +22,9 @@ services:
       - "DB_PASSWORD"
       - "DB_PORT"
       - "APP_SECRET_KEY"
+      - "APP_PORT"
+      - "MAP_CENTER"
+      - "MAP_COLOR"
     volumes:
       - .:/sunrise
     ports:
