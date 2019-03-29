@@ -115,7 +115,9 @@ jobs:
       - restore_cache:
           keys:
             - deps-{{ .Branch }}-{{ .Revision }}
-      - run: CYPRESS_baseUrl=http://localhost:$APP_PORT /node_modules/.bin/cypress run
+      - run: npm install --save-dev cypress
+      - run: CYPRESS_baseUrl=http://localhost:$APP_PORT $(npm bin)/cypress verify
+      - run: CYPRESS_baseUrl=http://localhost:$APP_PORT $(npm bin)/cypress run
       - store_artifacts:
           path: cypress/videos
           destination: videos
