@@ -115,6 +115,11 @@ jobs:
       - restore_cache:
           keys:
             - deps-{{ .Branch }}-{{ .Revision }}
+      - run:
+          name: Start Server
+          command: python manage.py runserver 0.0.0.0:$APP_PORT
+          background: true
+      - run: sleep 5
       - run: npm install --save-dev cypress
       - run: CYPRESS_baseUrl=http://localhost:$APP_PORT $(npm bin)/cypress verify
       - run: CYPRESS_baseUrl=http://localhost:$APP_PORT $(npm bin)/cypress run
