@@ -1,7 +1,7 @@
 from django.http import HttpResponse
 
-
 from sunrise import settings
+
 
 def home(request):
     html = """
