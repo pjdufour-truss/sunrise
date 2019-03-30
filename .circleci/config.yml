@@ -1,17 +1,17 @@
 version: "2.1"
 
 executors:
-  # `main` uses the `circleci/python:3.6.4` docker image with a checkout of the sunrise code
+  # `main` uses the `circleci/python:3.7.3` docker image with a checkout of the sunrise code
   primary:
     docker:
-      - image: circleci/python:3.6.4
+      - image: circleci/python:3.7.3
         environment:
           NODE_VERSION: 11.13.0
           APP_PORT: 8000
           APP_SECRET_KEY: "ba379e85c2426e6b0c0e3dc305e563bfec392af98898dae8256591f9d2751af7a6fc24c8b9dc540644e5d6fca9b5317dad3c9d035e3ff1ec1361223101ba4f48"
   primary_with_postgres:
     docker:
-      - image: circleci/python:3.6.4
+      - image: circleci/python:3.7.3
         environment:
           NODE_VERSION: 11.13.0
           APP_PORT: 8000
