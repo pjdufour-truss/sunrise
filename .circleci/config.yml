@@ -104,7 +104,15 @@ jobs:
             - deps-{{ .Branch }}-{{ .Revision }}
       - run:
           name: Install Node
-          command: sudo apt-get update && sudo apt-get -y install nodejs && sudo ln -s /usr/bin/node /usr/bin/nodejs
+          command: |
+            curl -s https://deb.nodesource.com/gpgkey/nodesource.gpg.key | apt-key add -
+            echo 'deb https://deb.nodesource.com/node_10.x stretch main' > /etc/apt/sources.list.d/nodesource.list
+            echo 'deb-src https://deb.nodesource.com/node_10.x stretch main' >> /etc/apt/sources.list.d/nodesource.list
+            sudo apt-get update && \
+            sudo apt-get install -y apt-transport-https lsb-release && \
+            sudo apt-get -y install nodejs && \
+            sudo rm -f /usr/bin/ && \
+            sudo ln -s /usr/bin/node /usr/bin/nodejs
       - run:
           name: Node Version
           command: node -v
