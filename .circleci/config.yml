@@ -105,14 +105,11 @@ jobs:
       - run:
           name: Install Node
           command: |
-            curl -s https://deb.nodesource.com/gpgkey/nodesource.gpg.key | apt-key add -
-            echo 'deb https://deb.nodesource.com/node_10.x stretch main' > /etc/apt/sources.list.d/nodesource.list
-            echo 'deb-src https://deb.nodesource.com/node_10.x stretch main' >> /etc/apt/sources.list.d/nodesource.list
-            sudo apt-get update && \
-            sudo apt-get install -y apt-transport-https lsb-release && \
-            sudo apt-get -y install nodejs && \
-            sudo rm -f /usr/bin/ && \
-            sudo ln -s /usr/bin/node /usr/bin/nodejs
+            sudo apt-get -qq update && \
+            sudo apt-get -qq -y install apt-transport-https lsb-release && \
+            curl -sS https://deb.nodesource.com/gpgkey/nodesource.gpg.key | sudo apt-key add -
+            echo "deb https://deb.nodesource.com/node_10.x $(lsb_release -sc) main" > /etc/apt/sources.list.d/nodesource.list
+            sudo apt-get -qq -y install nodejs
       - run:
           name: Node Version
           command: node -v
