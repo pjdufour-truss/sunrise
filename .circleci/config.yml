@@ -107,8 +107,8 @@ jobs:
           command: |
             sudo apt-get -qq update && \
             sudo apt-get -qq -y install apt-transport-https lsb-release && \
-            curl -sS https://deb.nodesource.com/gpgkey/nodesource.gpg.key | sudo apt-key add -
-            echo "deb https://deb.nodesource.com/node_10.x $(lsb_release -sc) main" > /etc/apt/sources.list.d/nodesource.list
+            curl -sS https://deb.nodesource.com/gpgkey/nodesource.gpg.key | sudo apt-key add - && \
+            sudo echo "deb https://deb.nodesource.com/node_10.x $(lsb_release -sc) main" > /etc/apt/sources.list.d/nodesource.list && \
             sudo apt-get -qq -y install nodejs
       - run:
           name: Node Version
