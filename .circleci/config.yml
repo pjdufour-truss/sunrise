@@ -104,10 +104,7 @@ jobs:
             - deps-{{ .Branch }}-{{ .Revision }}
       - run:
           name: Install Node
-          command: |
-            sudo apt-get update
-            sudo apt-get -y install nodejs
-            sudo ln -s /usr/local/bin/node /usr/local/bin/nodejs
+          command: sudo apt-get update && sudo apt-get -y install nodejs && sudo ln -s /usr/bin/node /usr/bin/nodejs
       - run:
           name: Node Version
           command: node -v
