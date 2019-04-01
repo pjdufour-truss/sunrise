@@ -130,7 +130,12 @@ jobs:
           command: pipenv run python manage.py runserver 0.0.0.0:$APP_PORT
           background: true
       - run: sleep 5
-      - run: npm install --save-dev cypress
+      - run:
+          name: Install Mocha
+          command: npm install --save-dev mocha mocha-multi-reporters mocha-junit-reporter
+      - run:
+          name: Install Cypress
+          command: npm install --save-dev cypress
       - run: CYPRESS_baseUrl=http://localhost:$APP_PORT $(npm bin)/cypress verify
       - run: CYPRESS_baseUrl=http://localhost:$APP_PORT $(npm bin)/cypress run
       - store_artifacts:
