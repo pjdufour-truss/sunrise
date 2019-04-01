@@ -81,7 +81,19 @@ jobs:
             - deps-{{ .Branch }}-{{ .Revision }}
       - run: pipenv run python manage.py migrate
 
-  # `server_tests` is used for running server unit tests.
+  # `unit_tests` is used for running server unit tests, which don't require a database.
+  unit_tests:
+    executor: primary
+    steps:
+      - checkout
+      - run: sudo chown -R circleci:circleci /usr/local/bin
+      - run: sudo chown -R circleci:circleci /usr/local/lib/python3.7/site-packages
+      - restore_cache:
+          keys:
+            - deps-{{ .Branch }}-{{ .Revision }}
+      - run: pipenv run python -m unittest -v sunrise.tests
+
+  # `server_tests` is used for running server tests, which test Django models.
   server_tests:
     executor: primary_with_postgres
     steps:
@@ -158,9 +170,12 @@ workflows:
       - migrations:
           requires:
             - pre_commit
+      - unit_tests:
+          requires:
+            - pre_commit
       - server_tests:
           requires:
-            - pre_commit
+            - unit_tests
       - e2e_tests:
           requires:
-            - pre_commit
+            - server_tests

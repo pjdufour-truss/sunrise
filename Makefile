@@ -20,6 +20,9 @@ down:
 migrate:
 	docker-compose exec web python manage.py migrate
 
+unit_tests:
+	docker-compose exec web python -m unittest -v sunrise.tests
+
 server_tests:
 	docker-compose exec web python manage.py test
 

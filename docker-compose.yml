@@ -15,12 +15,13 @@ services:
     build: .
     command: "python manage.py runserver 0.0.0.0:$APP_PORT"
     environment:
-      - "ALLOWED_HOSTS=*"
       - "DB_HOST"
       - "DB_NAME"
       - "DB_USER"
       - "DB_PASSWORD"
       - "DB_PORT"
+      - "APP_DEBUG"
+      - "ALLOWED_HOSTS"
       - "APP_SECRET_KEY"
       - "APP_PORT"
       - "MAP_CENTER"

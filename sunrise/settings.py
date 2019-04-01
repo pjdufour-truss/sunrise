@@ -131,4 +131,5 @@ STATIC_URL = '/static/'
 MAP_CENTER = [0.0, 0.0]
 if len(os.getenv("MAP_CENTER", "")) > 0:
     MAP_CENTER = [float(str) for str in os.getenv("MAP_CENTER", "").split(",")]
+
 MAP_COLOR = os.getenv("MAP_COLOR", "rgba(0, 0, 255, 0.4)")

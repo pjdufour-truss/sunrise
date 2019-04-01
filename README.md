@@ -21,3 +21,15 @@ Run End-To-End JavaScript tests.
 ```shell
 make e2e_tests
 ```
+
+Run unit tests.
+
+```shell
+make unit_tests
+```
+
+Run server tests.
+
+```shell
+make server_tests
+```
