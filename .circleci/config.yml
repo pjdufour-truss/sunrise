@@ -108,10 +108,10 @@ jobs:
           command: npm -v
       - run:
           name: Python Version
-          command: python3 --version
+          command: pipenv run python --version
       - run:
           name: Start Server
-          command: python manage.py runserver 0.0.0.0:$APP_PORT
+          command: pipenv run python manage.py runserver 0.0.0.0:$APP_PORT
           background: true
       - run: sleep 5
       - run: npm install --save-dev cypress
