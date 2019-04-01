@@ -6,12 +6,15 @@ executors:
     docker:
       - image: circleci/python:3.7-stretch-node
         environment:
+          APP_DEBUG: "True"
           APP_PORT: 8000
           APP_SECRET_KEY: "ba379e85c2426e6b0c0e3dc305e563bfec392af98898dae8256591f9d2751af7a6fc24c8b9dc540644e5d6fca9b5317dad3c9d035e3ff1ec1361223101ba4f48"
+          ALLOWED_HOSTS: "localhost"
   primary_with_postgres:
     docker:
       - image: circleci/python:3.7-stretch-node
         environment:
+          APP_DEBUG: "True"
           APP_PORT: 8000
           APP_SECRET_KEY: "ba379e85c2426e6b0c0e3dc305e563bfec392af98898dae8256591f9d2751af7a6fc24c8b9dc540644e5d6fca9b5317dad3c9d035e3ff1ec1361223101ba4f48"
           DB_NAME: sunrise
