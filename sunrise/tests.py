@@ -2,6 +2,7 @@ import unittest
 
 from sunrise import settings
 
+
 class TestSettings(unittest.TestCase):
 
     def test_allowed_hosts(self):
@@ -19,6 +20,7 @@ class TestSettings(unittest.TestCase):
         self.assertIsNotNone(settings.SECRET_KEY)
         # Assert that secret key is greater than or equal to 128
         self.assertGreaterEqual(len(settings.SECRET_KEY), 128)
+
 
 if __name__ == '__main__':
     unittest.main()
