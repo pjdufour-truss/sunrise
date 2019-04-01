@@ -94,6 +94,7 @@ jobs:
       - run: pipenv run python manage.py test
 
   # `e2e_tests` runs end-to-end JavaScript tests using Cypress.  https://www.cypress.io/
+  # Cypress dependencies found at https://github.com/cypress-io/cypress-docker-images/blob/master/base/10/Dockerfile.
   e2e_tests:
     executor: primary_with_postgres
     steps:
@@ -103,6 +104,18 @@ jobs:
       - restore_cache:
           keys:
             - deps-{{ .Branch }}-{{ .Revision }}
+      - run:
+          name: Install Cypress Dependencies
+          command: |
+            sudo apt-get update && \
+            sudo apt-get install -y \
+              libgtk2.0-0 \
+              libnotify-dev \
+              libgconf-2-4 \
+              libnss3 \
+              libxss1 \
+              libasound2 \
+              xvfb
       - run:
           name: Node Version
           command: node -v
