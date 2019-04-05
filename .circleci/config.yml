@@ -103,7 +103,7 @@ jobs:
       - restore_cache:
           keys:
             - deps-{{ .Branch }}-{{ .Revision }}
-      - name: make bin_linux/chamber
+      - run: make bin_linux/chamber
       - run:
           name: Run Acceptance Tests
           command: bin_linux/chamber exec sunrise-staging -- pipenv run python -m unittest -v sunrise.tests
@@ -118,7 +118,7 @@ jobs:
       - restore_cache:
           keys:
             - deps-{{ .Branch }}-{{ .Revision }}
-      - name: make bin_linux/chamber
+      - run: make bin_linux/chamber
       - run:
           name: Run Acceptance Tests
           command: bin_linux/chamber exec sunrise-prod -- pipenv run python -m unittest -v sunrise.tests
@@ -231,21 +231,21 @@ jobs:
     executor: primary
     steps:
       - checkout
-      - exit 1
+      - run: exit 1
 
   # `deploy_staging` deploys the container to the staging environment.
   deploy_staging:
     executor: primary
     steps:
       - checkout
-      - exit 1
+      - run: exit 1
 
   # `deploy_prod` deploys the container to the staging environment.
   deploy_prod:
     executor: primary
     steps:
       - checkout
-      - exit 1
+      - run: exit 1
 
 workflows:
   version: 2

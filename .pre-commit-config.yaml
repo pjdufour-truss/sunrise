@@ -1,5 +1,13 @@
 #documentation - docs/how-to/run-pre-commit-hooks.md
 repos:
+  - repo: local
+    hooks:
+      - id: circleci-validate
+        name: circleci-validate
+        entry: scripts/circleci_validate.sh
+        language: script
+        types: [text]
+        files: '[.]circleci/config.yml$'
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v2.1.0
     hooks:
