@@ -8,3 +8,6 @@ cypress/results/
 cypress/screenshots
 cypress/videos
 .DS_Store
+bin
+bin_linux
+rds-combined-ca-bundle.pem

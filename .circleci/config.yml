@@ -93,6 +93,36 @@ jobs:
             - deps-{{ .Branch }}-{{ .Revision }}
       - run: pipenv run python -m unittest -v sunrise.tests
 
+  # `acc_staging` is used for running acceptance tests against the staging environment.
+  acc_staging:
+    executor: primary
+    steps:
+      - checkout
+      - run: sudo chown -R circleci:circleci /usr/local/bin
+      - run: sudo chown -R circleci:circleci /usr/local/lib/python3.7/site-packages
+      - restore_cache:
+          keys:
+            - deps-{{ .Branch }}-{{ .Revision }}
+      - name: make bin_linux/chamber
+      - run:
+          name: Run Acceptance Tests
+          command: bin_linux/chamber exec sunrise-staging -- pipenv run python -m unittest -v sunrise.tests
+
+  # `acc_prod` is used for running acceptance tests against the production environment.
+  acc_prod:
+    executor: primary
+    steps:
+      - checkout
+      - run: sudo chown -R circleci:circleci /usr/local/bin
+      - run: sudo chown -R circleci:circleci /usr/local/lib/python3.7/site-packages
+      - restore_cache:
+          keys:
+            - deps-{{ .Branch }}-{{ .Revision }}
+      - name: make bin_linux/chamber
+      - run:
+          name: Run Acceptance Tests
+          command: bin_linux/chamber exec sunrise-prod -- pipenv run python -m unittest -v sunrise.tests
+
   # `server_tests` is used for running server tests, which test Django models.
   server_tests:
     executor: primary_with_postgres
@@ -159,6 +189,64 @@ jobs:
       - store_test_results:
           path: cypress/results
 
+  # `build` builds the application container and pushes to the container repository
+  build:
+    executor: primary
+    steps:
+      - checkout
+      - setup_remote_docker:
+          docker_layer_caching: true
+      - restore_cache:
+          keys:
+            - go-pkg-dep-sources-{{ checksum "Gopkg.lock" }}
+      - restore_cache:
+          keys:
+            - mymove-vendor-{{ checksum "Gopkg.lock" }}
+      - restore_cache:
+          keys:
+            - v1-cache-yarn-v2-{{ checksum "yarn.lock" }}
+      - restore_cache:
+          keys:
+            - v1-mymove-node-modules-{{ checksum "yarn.lock" }}
+      - run:
+          name: Download Chamber
+          command: make bin_linux/chamber
+      - run:
+          name: "Download RDS Certificates"
+          command: make rds-combined-ca-bundle.pem
+      - run:
+          name: Build Docker Image
+          command: docker build -f Dockerfile -t sunrise:web .
+      - run:
+          name: Push Docker Image
+          command: |
+            if [ "${AWS_ACCOUNT_ID}" != "" ]; then
+              bash -c "$(aws ecr get-login --no-include-email --region ${AWS_DEFAULT_REGION})"
+              docker tag sunrise:web ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com//${AWS_ECR_REPO}:git-${CIRCLE_SHA1}
+              docker push ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com/${AWS_ECR_REPO}:git-${CIRCLE_SHA1}
+            fi
+
+  # `migrate_staging` migrate the staging database.
+  migrate_staging:
+    executor: primary
+    steps:
+      - checkout
+      - exit 1
+
+  # `deploy_staging` deploys the container to the staging environment.
+  deploy_staging:
+    executor: primary
+    steps:
+      - checkout
+      - exit 1
+
+  # `deploy_prod` deploys the container to the staging environment.
+  deploy_prod:
+    executor: primary
+    steps:
+      - checkout
+      - exit 1
+
 workflows:
   version: 2
   main:
@@ -173,9 +261,28 @@ workflows:
       - unit_tests:
           requires:
             - pre_commit
+      - acc_staging:
+          requires:
+            - pre_commit
+      - acc_prod:
+          requires:
+            - pre_commit
       - server_tests:
           requires:
             - unit_tests
       - e2e_tests:
           requires:
             - server_tests
+      - build:
+          requires:
+            - server_tests
+      - migrate_staging:
+          requires:
+            - build
+      - deploy_staging:
+          requires:
+            - migrate_staging
+      - approve_prod_deploy:
+          type: approval
+          requires:
+            - deploy_staging
