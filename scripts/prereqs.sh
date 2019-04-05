@@ -15,11 +15,12 @@ function check() {
     fi
 }
 
-if [[ $(uname -s) = aDarwin ]]; then
+if [[ -n $(type -p "brew") ]]; then
   check aws-vault "brew cask install aws-vault"
   check direnv "brew install direnv"
   check shellcheck "brew install shellcheck"
   check pre-commit "brew install pre-commit"
+  check circleci "brew install circleci"
 else
   check aws-vault "See https://github.com/99designs/aws-vault/releases"
   if [[ -n $(type -p "apt-get") ]]; then
@@ -33,6 +34,11 @@ else
     check pre-commit "pip install pre-commit"
   else
     check pre-commit "See https://pre-commit.com/"
+  fi
+  if [[ -n $(type -p "snap") ]]; then
+    check circleci "sudo snap install docker circleci && sudo snap connect circleci:docker docker"
+  else
+    check circleci "See https://circleci.com/docs/2.0/local-cli/#installation"
   fi
 fi
 
