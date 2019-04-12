@@ -11,3 +11,7 @@ cypress/videos
 bin
 bin_linux
 rds-combined-ca-bundle.pem
+.terraform
+*.tfstate
+*.tfstate.*
+*.pyc

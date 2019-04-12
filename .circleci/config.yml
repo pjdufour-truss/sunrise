@@ -188,6 +188,7 @@ jobs:
           destination: screenshots
       - store_test_results:
           path: cypress/results
+          destination: results
 
   # `build` builds the application container and pushes to the container repository
   build:
@@ -209,14 +210,12 @@ jobs:
           command: make rds-combined-ca-bundle.pem
       - run:
           name: Build Docker Image
-          command: docker build -f Dockerfile -t sunrise:web .
+          command: make build_gunicorn
       - run:
           name: Push Docker Image
           command: |
-            if [ "${AWS_ACCOUNT_ID}" != "" ]; then
-              bash -c "$(aws ecr get-login --no-include-email --region ${AWS_DEFAULT_REGION})"
-              docker tag sunrise:web ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com//${AWS_ECR_REPO}:git-${CIRCLE_SHA1}
-              docker push ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com/${AWS_ECR_REPO}:git-${CIRCLE_SHA1}
+            if [ "${AWS_ACCESS_KEY_ID}" != "" ]; then
+              bash scripts/ecr_push.sh "sunrise:web" "${AWS_ECR_REPO}" "git-${CIRCLE_SHA1}"
             fi
 
   # `migrate_staging` migrate the staging database.

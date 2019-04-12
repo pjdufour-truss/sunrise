@@ -25,10 +25,16 @@ endif
 	docker-compose up -d db
 	@echo Sleeping for 5 seconds
 	sleep 5
-	docker-compose up web
+	docker-compose up --build web
+
+shell:
+	docker-compose exec web bash
 
 down:
 	docker-compose down
+
+build_deployed:
+	docker build -f Dockerfile.gunicorn -t sunrise:web .
 
 migrate:
 	docker-compose exec web python manage.py migrate
@@ -75,5 +81,6 @@ clean:
 	rm -rf ./mnt
 	rm -f Pipfile
 	rm -f Pipfile.lock
+	docker-compose rm -f
 
-.PHONY: clean up down migrate psql superuser secretkey build_cypress e2e_tests
+.PHONY: clean up down migrate psql superuser secretkey build_deployed build_cypress e2e_tests

@@ -12,8 +12,14 @@ services:
     ports:
       - "5432:5432"
   web:
-    build: .
+    build:
+      context: .
+      dockerfile: Dockerfile
+      # To build with gunicorn, use the following dockerfile.
+      #dockerfile: Dockerfile.gunicorn
     command: "python manage.py runserver 0.0.0.0:$APP_PORT"
+    # To serve with gunicorn, use the following command.
+    #command: "/usr/local/bin/gunicorn -c gunicorn.conf.py sunrise.wsgi:application -b 0.0.0.0:$APP_PORT"
     environment:
       - "DB_HOST"
       - "DB_NAME"

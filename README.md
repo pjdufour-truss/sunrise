@@ -55,3 +55,17 @@ Run server tests.
 ```shell
 make server_tests
 ```
+
+### Deployment
+
+Plan
+
+```shell
+aws-vault exec $AWS_PROFILE -- terraform plan
+```
+
+Apply
+
+```shell
+aws-vault exec $AWS_PROFILE -- terraform apply
+```

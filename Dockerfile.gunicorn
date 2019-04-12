@@ -16,6 +16,9 @@ WORKDIR /sunrise
 
 COPY requirements.txt /sunrise/
 
-RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt && \
+pip install gunicorn==19.9.0 gevent==1.4.0
+
+COPY gunicorn.conf.py /
 
 COPY . /sunrise/
