@@ -63,6 +63,7 @@ jobs:
           keys:
             - pre-commit-dot-cache-{{ checksum ".pre-commit-config.yaml" }}
       - run: sudo pip install pre-commit
+      - run: make bin_linux/terraform
       - run: pre-commit run --all-files
       - save_cache:
           key: pre-commit-dot-cache-{{ checksum ".pre-commit-config.yaml" }}
