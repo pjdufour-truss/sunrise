@@ -196,18 +196,11 @@ jobs:
       - checkout
       - setup_remote_docker:
           docker_layer_caching: true
+      - run: sudo chown -R circleci:circleci /usr/local/bin
+      - run: sudo chown -R circleci:circleci /usr/local/lib/python3.7/site-packages
       - restore_cache:
           keys:
-            - go-pkg-dep-sources-{{ checksum "Gopkg.lock" }}
-      - restore_cache:
-          keys:
-            - mymove-vendor-{{ checksum "Gopkg.lock" }}
-      - restore_cache:
-          keys:
-            - v1-cache-yarn-v2-{{ checksum "yarn.lock" }}
-      - restore_cache:
-          keys:
-            - v1-mymove-node-modules-{{ checksum "yarn.lock" }}
+            - deps-{{ .Branch }}-{{ .Revision }}
       - run:
           name: Download Chamber
           command: make bin_linux/chamber
