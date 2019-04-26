@@ -28,6 +28,7 @@ aws_account_id=$(aws sts get-caller-identity --output "text" --query "Account")
 readonly aws_account_id
 
 if [[ "${aws_account_id}" != "" ]]; then
+  # shellcheck disable=SC2086
   bash -c "$(aws ecr get-login --no-include-email --region ${AWS_DEFAULT_REGION})"
   docker tag "${image}" "${aws_account_id}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com/${repo}:${tag}"
   docker push "${aws_account_id}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com/${repo}:${tag}"

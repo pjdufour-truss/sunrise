@@ -13,11 +13,6 @@ bin_linux/chamber: bin_linux
 	curl -LsSo bin_linux/chamber https://github.com/segmentio/chamber/releases/download/v2.3.2/chamber-v2.3.2-linux-amd64
 	chmod 755 bin_linux/chamber
 
-bin_linux/terraform: bin_linux
-	curl -LsSo bin_linux/terraform.zip https://releases.hashicorp.com/terraform/0.11.13/terraform_0.11.13_linux_amd64.zip
-	unzip bin_linux/terraform.zip -d bin_linux
-	chmod 755 bin_linux/terraform
-
 rds-combined-ca-bundle.pem:
 	curl -sSo rds-combined-ca-bundle.pem https://s3.amazonaws.com/rds-downloads/rds-combined-ca-bundle.pem
 
